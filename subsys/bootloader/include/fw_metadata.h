@@ -88,7 +88,7 @@ static inline bool memeq_32(const void *expected, const void *actual,
  */
 static inline const struct fw_firmware_info *
 firmware_info_get(u32_t firmware_address) {
-	u32_t finfo_addr = firmware_address + CONFIG_SB_FIRMWARE_INFO_OFFSET;
+	u32_t finfo_addr = firmware_address + CONFIG_BOOTLOADER_METADATA_OFFSET;
 	const struct fw_firmware_info *finfo;
 	const u32_t firmware_info_magic[] = {FIRMWARE_INFO_MAGIC};
 

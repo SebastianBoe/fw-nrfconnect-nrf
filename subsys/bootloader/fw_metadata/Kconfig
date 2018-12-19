@@ -14,12 +14,22 @@ config SB_VALIDATION_METADATA_OFFSET
 	  the metadata will be appended directly after the application image,
 	  aligned to closest word.
 
-config SB_FIRMWARE_INFO_OFFSET
-	hex "The location of firmware info inside firmware."
+# Note that these BOOTLOADER_METADATA* options are also declared in
+# 'zephyr'
+config BOOTLOADER_METADATA
+	bool
+	default y
+
+config BOOTLOADER_METADATA_OFFSET
+	hex
 	default 0x800
 	help
 	  Note that all space between the vector table and this address will be
 	  unused.
+
+config BOOTLOADER_METADATA_INPUT_SECTION
+	string
+	default ".firmware_info"
 
 config SB_FIRMWARE_VERSION
 	int "Version number of the firmware."

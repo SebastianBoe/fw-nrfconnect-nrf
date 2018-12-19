@@ -137,9 +137,11 @@ SECTIONS
 
 	_vector_end = .;
 
-#if defined(CONFIG_SB_FIRMWARE_INFO_OFFSET)
-	. = CONFIG_SB_FIRMWARE_INFO_OFFSET;
-	KEEP(*(.firmware_info))
+#ifdef CONFIG_BOOTLOADER_METADATA
+    . = ROM_ADDR + CONFIG_BOOTLOADER_METADATA_OFFSET;
+	KEEP(*(CONFIG_BOOTLOADER_METADATA_INPUT_SECTION))
+#else
+#error "Expected CONFIG_BOOTLOADER_METADATA to be set"
 #endif
 
 	_image_text_start = .;
