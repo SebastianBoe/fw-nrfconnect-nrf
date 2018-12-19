@@ -34,7 +34,6 @@ target_sources_ifdef(CONFIG_SB_C_RUNTIME_SETUP_VARIANT_ZEPHYR
   ${CORTEX_M}/reset.S
   ${ARM}/irq_init.c
   ${CORTEX_M}/vector_table.S
-  zephyr_kernel_init_cpy.c
   zephyr_dummy_interrupt_handlers.c
   )
 
@@ -46,6 +45,27 @@ target_include_directories_ifdef(CONFIG_SB_C_RUNTIME_SETUP_VARIANT_ZEPHYR
   ${ZEPHYR_BASE}/include
   ${ARM_INC}/include/cortex_m
   )
+
+if(CONFIG_SB_C_RUNTIME_SETUP_VARIANT_ZEPHYR)
+set(INIT_O_PATH ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/kernel_init.dir/${ZEPHYR_BASE}/kernel/init.c.obj)
+target_link_libraries_ifdef(CONFIG_SB_C_RUNTIME_SETUP_VARIANT_ZEPHYR
+  c_runtime_setup
+  PRIVATE
+  ${INIT_O_PATH}.mod
+)
+
+add_library(kernel_init STATIC ${ZEPHYR_BASE}/kernel/init.c)
+target_link_libraries(kernel_init zephyr_interface)
+
+add_custom_command(
+  OUTPUT ${INIT_O_PATH}.mod
+  COMMAND ${CMAKE_OBJCOPY} --redefine-sym _Cstart=UNUSED_Cstart ${INIT_O_PATH} ${INIT_O_PATH}.mod
+  DEPENDS kernel_init
+)
+
+add_custom_target(kernel_init_objcopy DEPENDS ${INIT_O_PATH}.mod)
+add_dependencies(c_runtime_setup kernel_init_objcopy)
+endif()
 
 # Nordic specific for startup code
 if(CONFIG_SOC_SERIES_NRF91X)
