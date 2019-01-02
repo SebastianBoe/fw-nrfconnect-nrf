@@ -51,20 +51,15 @@ set(INIT_O_PATH ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/kernel_init.dir/${ZEPHYR_
 target_link_libraries_ifdef(CONFIG_SB_C_RUNTIME_SETUP_VARIANT_ZEPHYR
   c_runtime_setup
   PRIVATE
-  ${INIT_O_PATH}.mod
+  ${INIT_O_PATH}
 )
 
 add_library(kernel_init STATIC ${ZEPHYR_BASE}/kernel/init.c)
 target_link_libraries(kernel_init zephyr_interface)
+target_compile_definitions(kernel_init PRIVATE _Cstart=UNUSED_Cstart)
+add_dependencies(kernel_init offsets_h)
 
-add_custom_command(
-  OUTPUT ${INIT_O_PATH}.mod
-  COMMAND ${CMAKE_OBJCOPY} --redefine-sym _Cstart=UNUSED_Cstart ${INIT_O_PATH} ${INIT_O_PATH}.mod
-  DEPENDS kernel_init
-)
-
-add_custom_target(kernel_init_objcopy DEPENDS ${INIT_O_PATH}.mod)
-add_dependencies(c_runtime_setup kernel_init_objcopy)
+add_dependencies(c_runtime_setup kernel_init)
 endif()
 
 # Nordic specific for startup code
